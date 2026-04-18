@@ -1,0 +1,132 @@
+.edit-profile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.edit-profile-modal {
+  background: white;
+  padding: 24px;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.edit-profile-modal h2 {
+  margin-top: 0;
+  color: #31374B;
+}
+
+.edit-profile-modal label {
+  display: block;
+  margin: 12px 0 4px;
+  font-weight: 500;
+  color: #31374B;
+}
+
+.edit-profile-modal input, 
+.edit-profile-modal select, 
+.edit-profile-modal textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #979187;
+  border-radius: 12px;
+  font-family: inherit;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.modal-buttons button:first-child {
+  background: #979187;
+  color: white;
+}
+
+.modal-buttons button:last-child {
+  background: #d2ea4c;
+  color: #31374B;
+  font-weight: bold;
+}
+
+.error {
+  background: #ffe6e6;
+  color: #e74c3c;
+  padding: 8px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.location-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.location-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #979187;
+  border-radius: 12px;
+}
+
+.location-btn {
+  background-color: #84aba4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.location-btn:hover {
+  background-color: #31374B;
+}
+
+.location-address-display {
+  background-color: #f3f7f1;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #31374B;
+}
+
+.coordinates-note {
+  font-size: 11px;
+  color: #979187;
+  margin-top: 4px;
+}

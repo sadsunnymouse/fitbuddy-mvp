@@ -1,0 +1,146 @@
+.chat-window-container {
+  max-width: 500px;
+  margin: 0 auto;
+  background-color: #f3f7f1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+}
+
+.chat-header h3 {
+  margin: 0;
+  color: #31374B;
+}
+
+.messages-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.message {
+  display: flex;
+}
+
+.my-message {
+  justify-content: flex-end;
+}
+
+.their-message {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  max-width: 70%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  background-color: white;
+  color: #31374B;
+}
+
+.my-message .message-bubble {
+  background-color: #d2ea4c;
+  color: #31374B;
+}
+
+.message-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background-color: white;
+  border-top: 1px solid #eee;
+}
+
+.message-input-area input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #979187;
+  border-radius: 30px;
+}
+
+.message-input-area button {
+  background-color: #84aba4;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.common-events {
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+.common-events h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #31374B;
+}
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.common-event-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.event-title {
+  font-weight: bold;
+  color: #31374B;
+}
+.event-date {
+  color: #84aba4;
+  font-size: 10px;
+}
+.confirmed-badge {
+  background-color: #d2ea4c;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: bold;
+}
+.pending-badge {
+  background-color: #979187;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+}
+
+.arrange-from-chat {
+  background-color: #d2ea4c;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.arrange-from-chat:hover {
+  background-color: #84aba4;
+  color: white;
+}
