@@ -1,0 +1,15 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "FitBuddy – это веб-приложение для поиска людей для совместных тренировок, участия в спортивных событиях и общения в чатах. Проект реализован в рамках учебной работы (PERN + Docker)",
+  "main": "seed-runner.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pg": "^8.20.0"
+  }
+}

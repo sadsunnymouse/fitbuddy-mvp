@@ -21,10 +21,9 @@ const pool = new Pool({
   port: process.env.DB_PORT || 5432,
 });
 
-// ========== АВТОМАТИЧЕСКАЯ ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ ==========
+// ========== АВТОМАТИЧЕСКАЯ ИНИЦИАЛИЗАЦИЯ СТРУКТУРЫ БД ==========
 async function executeSqlFile(filePath, poolInstance) {
   const sql = await fs.readFile(filePath, 'utf8');
-  // Разделяем на отдельные команды по точке с запятой
   const commands = sql.split(';').filter(cmd => cmd.trim().length > 0);
   for (const cmd of commands) {
     try {
@@ -39,7 +38,6 @@ async function executeSqlFile(filePath, poolInstance) {
 
 async function initializeDatabase() {
   try {
-    // Проверяем, существует ли таблица users (признак инициализации)
     const tableCheck = await pool.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -47,20 +45,15 @@ async function initializeDatabase() {
       );
     `);
     const tableExists = tableCheck.rows[0].exists;
-    if (tableExists) {
-      console.log('База данных уже инициализирована. Пропускаем init.sql и seed.sql');
-      return;
+    if (!tableExists) {
+      console.log('Таблицы не найдены. Выполняем init.sql...');
+      const initPath = path.join(__dirname, 'database', 'init.sql');
+      await executeSqlFile(initPath, pool);
+      console.log('init.sql выполнен успешно. Структура БД создана.');
+    } else {
+      console.log('Таблицы уже существуют. Инициализация структуры пропущена.');
     }
-
-    console.log('База данных не инициализирована. Выполняем init.sql...');
-    const initPath = path.join(__dirname, 'database', 'init.sql');
-    await executeSqlFile(initPath, pool);
-    console.log('init.sql выполнен успешно.');
-
-    console.log('Выполняем seed.sql (заполнение тестовыми данными)...');
-    const seedPath = path.join(__dirname, 'database', 'seed.sql');
-    await executeSqlFile(seedPath, pool);
-    console.log('seed.sql выполнен успешно. База данных готова.');
+    // seed.sql не выполняется автоматически – тестовые данные загружаются вручную при необходимости
   } catch (err) {
     console.error('КРИТИЧЕСКАЯ ОШИБКА: не удалось инициализировать базу данных', err);
     process.exit(1);
@@ -732,7 +725,7 @@ app.post('/api/messages', authenticateToken, async (req, res) => {
   }
 });
 
-// ========== ЗАПУСК СЕРВЕРА ПОСЛЕ ИНИЦИАЛИЗАЦИИ БД ==========
+// ========== ЗАПУСК СЕРВЕРА ПОСЛЕ ИНИЦИАЛИЗАЦИИ СТРУКТУРЫ БД ==========
 initializeDatabase().then(() => {
   app.listen(port, () => console.log(`Backend running on port ${port}`));
 }).catch(err => {
