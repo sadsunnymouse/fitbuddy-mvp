@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import './EventList.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function EventList({ onSelectEvent }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +11,7 @@ function EventList({ onSelectEvent }) {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/events');
+        const response = await fetch(`${API_URL}/api/events`);
         if (!response.ok) throw new Error('Ошибка загрузки');
         const data = await response.json();
         setEvents(data);

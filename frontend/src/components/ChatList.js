@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import './ChatList.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function ChatList({ onSelectChat }) {
   const [chats, setChats] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -10,7 +12,7 @@ function ChatList({ onSelectChat }) {
     const fetchChats = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/chats', {
+        const response = await fetch(`${API_URL}/api/chats`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Ошибка загрузки чатов');

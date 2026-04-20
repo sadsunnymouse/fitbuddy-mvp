@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import useGeolocation from '../hooks/useGeolocation';
 import './NearbyUsers.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function NearbyUsers({ onSelectUser }) {
   const { location, loading: locLoading, error: locError } = useGeolocation();
   const [users, setUsers] = useState([]);
@@ -11,7 +13,7 @@ function NearbyUsers({ onSelectUser }) {
   useEffect(() => {
     if (location) {
       setLoading(true);
-      fetch(`/api/users/nearby?lat=${location.lat}&lon=${location.lon}&radius=5000`, {
+      fetch(`${API_URL}/api/users/nearby?lat=${location.lat}&lon=${location.lon}&radius=5000`, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       })
         .then(res => res.json())

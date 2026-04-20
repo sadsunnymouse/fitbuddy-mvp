@@ -3,6 +3,8 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const fs = require('fs').promises;
+const path = require('path');
 
 const app = express();
 const port = 5000;
@@ -18,6 +20,53 @@ const pool = new Pool({
   database: process.env.DB_NAME || 'fitbuddy',
   port: process.env.DB_PORT || 5432,
 });
+
+// ========== АВТОМАТИЧЕСКАЯ ИНИЦИАЛИЗАЦИЯ БАЗЫ ДАННЫХ ==========
+async function executeSqlFile(filePath, poolInstance) {
+  const sql = await fs.readFile(filePath, 'utf8');
+  // Разделяем на отдельные команды по точке с запятой
+  const commands = sql.split(';').filter(cmd => cmd.trim().length > 0);
+  for (const cmd of commands) {
+    try {
+      await poolInstance.query(cmd);
+    } catch (err) {
+      console.error(`Ошибка выполнения SQL из ${filePath}:`, err.message);
+      console.error('Запрос:', cmd);
+      throw err;
+    }
+  }
+}
+
+async function initializeDatabase() {
+  try {
+    // Проверяем, существует ли таблица users (признак инициализации)
+    const tableCheck = await pool.query(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'users'
+      );
+    `);
+    const tableExists = tableCheck.rows[0].exists;
+    if (tableExists) {
+      console.log('База данных уже инициализирована. Пропускаем init.sql и seed.sql');
+      return;
+    }
+
+    console.log('База данных не инициализирована. Выполняем init.sql...');
+    const initPath = path.join(__dirname, 'database', 'init.sql');
+    await executeSqlFile(initPath, pool);
+    console.log('init.sql выполнен успешно.');
+
+    console.log('Выполняем seed.sql (заполнение тестовыми данными)...');
+    const seedPath = path.join(__dirname, 'database', 'seed.sql');
+    await executeSqlFile(seedPath, pool);
+    console.log('seed.sql выполнен успешно. База данных готова.');
+  } catch (err) {
+    console.error('КРИТИЧЕСКАЯ ОШИБКА: не удалось инициализировать базу данных', err);
+    process.exit(1);
+  }
+}
+// ========== КОНЕЦ БЛОКА ИНИЦИАЛИЗАЦИИ ==========
 
 // ---------- Middleware ----------
 const authenticateToken = (req, res, next) => {
@@ -384,7 +433,6 @@ app.post('/api/matches/request/:userId', authenticateToken, async (req, res) => 
         return res.status(400).json({ error: 'Запрос уже отправлен' });
       }
       if (match.from_user_id === toUserId && match.status === 'pending') {
-        // Ответный запрос: принимаем автоматически
         await pool.query(
           'UPDATE matches SET status = $1, updated_at = NOW() WHERE id = $2',
           ['accepted', match.id]
@@ -684,5 +732,10 @@ app.post('/api/messages', authenticateToken, async (req, res) => {
   }
 });
 
-// Запуск сервера
-app.listen(port, () => console.log(`Backend running on port ${port}`));
+// ========== ЗАПУСК СЕРВЕРА ПОСЛЕ ИНИЦИАЛИЗАЦИИ БД ==========
+initializeDatabase().then(() => {
+  app.listen(port, () => console.log(`Backend running on port ${port}`));
+}).catch(err => {
+  console.error('Ошибка при инициализации:', err);
+  process.exit(1);
+});

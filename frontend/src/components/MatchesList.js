@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './MatchesList.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function MatchesList({ onSelectUser }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,7 +13,7 @@ function MatchesList({ onSelectUser }) {
   const fetchMatches = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/matches/incoming', {
+      const response = await fetch(`${API_URL}/api/matches/incoming`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) throw new Error('Ошибка загрузки');
@@ -32,15 +34,13 @@ function MatchesList({ onSelectUser }) {
   const handleAccept = async (matchId, fromUserId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`/api/matches/accept/${matchId}`, {
+      const response = await fetch(`${API_URL}/api/matches/accept/${matchId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) throw new Error('Ошибка при принятии');
       showNotification('Мэтч принят! Теперь вы можете общаться в чате.', 'success');
-      // Убираем принятый мэтч из списка
       setMatches(prev => prev.filter(m => m.id !== matchId));
-      // Если нужно открыть чат – можно перейти на страницу чата, но пока просто обновляем
       if (onSelectUser) onSelectUser(fromUserId);
     } catch (err) {
       console.error(err);

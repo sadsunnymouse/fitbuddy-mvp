@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './EditProfile.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function EditProfile({ userId, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
     full_name: '',
@@ -21,7 +23,7 @@ function EditProfile({ userId, onClose, onUpdate }) {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`/api/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Не удалось загрузить профиль');
@@ -61,7 +63,7 @@ function EditProfile({ userId, onClose, onUpdate }) {
         ...formData,
         interests: formData.interests ? formData.interests.split(',').map(s => s.trim()) : []
       };
-      const response = await fetch('/api/profile', {
+      const response = await fetch(`${API_URL}/api/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

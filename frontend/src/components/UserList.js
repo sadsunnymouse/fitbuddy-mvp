@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './UserList.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function UserList({ onSelectUser }) {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,14 +17,13 @@ function UserList({ onSelectUser }) {
   const [showManualInput, setShowManualInput] = useState(false);
   const { showNotification } = useNotification();
 
-  // Загружаем сохранённые координаты (без уведомления)
   useEffect(() => {
     const fetchSavedLocation = async () => {
       const token = localStorage.getItem('token');
       const userId = localStorage.getItem('userId');
       if (!token || !userId) return;
       try {
-        const response = await fetch(`/api/users/${userId}`, {
+        const response = await fetch(`${API_URL}/api/users/${userId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await response.json();
@@ -54,7 +55,7 @@ function UserList({ onSelectUser }) {
         const token = localStorage.getItem('token');
         if (token) {
           try {
-            await fetch('/api/user/location', {
+            await fetch(`${API_URL}/api/user/location`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -94,7 +95,7 @@ function UserList({ onSelectUser }) {
     setShowManualInput(false);
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('/api/user/location', {
+      fetch(`${API_URL}/api/user/location`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ function UserList({ onSelectUser }) {
     else if (distance === '7km') radius = 7000;
     else if (distance === 'above7km') radius = 500000;
     try {
-      let url = `/api/users/nearby?lat=${lat}&lon=${lon}&radius=${radius}`;
+      let url = `${API_URL}/api/users/nearby?lat=${lat}&lon=${lon}&radius=${radius}`;
       if (experienceLevel) url += `&experience_level=${experienceLevel}`;
       if (goal) url += `&goal=${goal}`;
       const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
@@ -135,7 +136,7 @@ function UserList({ onSelectUser }) {
   const fetchUsersWithoutLocation = async () => {
     setLoading(true);
     const token = localStorage.getItem('token');
-    let url = `/api/users?${experienceLevel ? `experience_level=${experienceLevel}&` : ''}${goal ? `goal=${goal}` : ''}`;
+    let url = `${API_URL}/api/users?${experienceLevel ? `experience_level=${experienceLevel}&` : ''}${goal ? `goal=${goal}` : ''}`;
     try {
       const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
       const data = await response.json();

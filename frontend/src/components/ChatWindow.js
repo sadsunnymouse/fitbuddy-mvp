@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './ChatWindow.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function ChatWindow({ matchId, otherUserId, otherUserName, onBack }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -14,7 +16,7 @@ function ChatWindow({ matchId, otherUserId, otherUserName, onBack }) {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(`/api/messages/${matchId}`, {
+        const response = await fetch(`${API_URL}/api/messages/${matchId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Ошибка загрузки сообщений');
@@ -29,7 +31,7 @@ function ChatWindow({ matchId, otherUserId, otherUserName, onBack }) {
     };
     const fetchCommonEvents = async () => {
       try {
-        const response = await fetch(`/api/common-events/${otherUserId}`, {
+        const response = await fetch(`${API_URL}/api/common-events/${otherUserId}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) throw new Error('Ошибка загрузки общих событий');
@@ -46,7 +48,7 @@ function ChatWindow({ matchId, otherUserId, otherUserName, onBack }) {
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
     try {
-      const response = await fetch('/api/messages', {
+      const response = await fetch(`${API_URL}/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,14 +68,13 @@ function ChatWindow({ matchId, otherUserId, otherUserName, onBack }) {
 
   const handleArrangeFromChat = async (eventId) => {
     try {
-      const response = await fetch(`/api/events/${eventId}/arrange/${otherUserId}`, {
+      const response = await fetch(`${API_URL}/api/events/${eventId}/arrange/${otherUserId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) throw new Error('Не удалось договориться');
       showNotification('Встреча подтверждена!', 'success');
-      // Обновить список общих событий
-      const eventsRes = await fetch(`/api/common-events/${otherUserId}`, {
+      const eventsRes = await fetch(`${API_URL}/api/common-events/${otherUserId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const eventsData = await eventsRes.json();

@@ -4,6 +4,8 @@ import EditProfile from './EditProfile';
 import { useNotification } from '../context/NotificationContext';
 import './UserProfile.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function UserProfile({ userId, onBack, onOpenChat }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,7 +22,7 @@ function UserProfile({ userId, onBack, onOpenChat }) {
 
   const fetchUser = async () => {
     try {
-      const response = await fetch(`/api/users/${userId}`, {
+      const response = await fetch(`${API_URL}/api/users/${userId}`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (!response.ok) throw new Error('Не удалось загрузить профиль');
@@ -37,7 +39,7 @@ function UserProfile({ userId, onBack, onOpenChat }) {
   const checkMatchStatus = async () => {
     if (!currentUserId || currentUserId === userId) return;
     try {
-      const res = await fetch(`/api/matches/check/${userId}`, {
+      const res = await fetch(`${API_URL}/api/matches/check/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
@@ -62,7 +64,7 @@ function UserProfile({ userId, onBack, onOpenChat }) {
   const handleMatch = async () => {
     setMatchLoading(true);
     try {
-      const response = await fetch(`/api/matches/request/${userId}`, {
+      const response = await fetch(`${API_URL}/api/matches/request/${userId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -70,8 +72,7 @@ function UserProfile({ userId, onBack, onOpenChat }) {
       if (response.ok) {
         if (data.accepted) {
           setMatchStatus('accepted');
-          // После взаимного мэтча нужно получить match_id
-          const checkRes = await fetch(`/api/matches/check/${userId}`, {
+          const checkRes = await fetch(`${API_URL}/api/matches/check/${userId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const checkData = await checkRes.json();
@@ -92,14 +93,12 @@ function UserProfile({ userId, onBack, onOpenChat }) {
   };
 
   const handleOpenChat = async () => {
-    // Если matchId уже есть – открываем
     if (matchId && onOpenChat) {
       onOpenChat(matchId, userId, user?.full_name);
       return;
     }
-    // Иначе пробуем получить match_id заново
     try {
-      const res = await fetch(`/api/matches/check/${userId}`, {
+      const res = await fetch(`${API_URL}/api/matches/check/${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();

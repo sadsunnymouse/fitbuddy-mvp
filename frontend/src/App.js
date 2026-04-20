@@ -11,6 +11,8 @@ import ChatWindow from './components/ChatWindow';
 import { NotificationProvider, useNotification } from './context/NotificationContext';
 import './App.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function AppContent() {
   const [screen, setScreen] = useState('onboarding');
   const [tab, setTab] = useState('people');
@@ -43,7 +45,7 @@ function AppContent() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const response = await fetch('/api/upcoming-arrangements', {
+      const response = await fetch(`${API_URL}/api/upcoming-arrangements`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!response.ok) return;

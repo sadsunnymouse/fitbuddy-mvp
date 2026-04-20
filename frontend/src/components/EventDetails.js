@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './EventDetails.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 const getColorFromName = (name) => {
   const palette = ['#d2ea4c', '#84aba4', '#979187', '#31374B', '#f3f7f1', '#4a9e8a', '#c4a35a', '#6c8b7a'];
   let hash = 0;
@@ -27,11 +29,11 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
     const fetchData = async () => {
       try {
         const [eventRes, participantsRes, mutualRes] = await Promise.all([
-          fetch(`/api/events/${eventId}`),
-          fetch(`/api/events/${eventId}/participants`, {
+          fetch(`${API_URL}/api/events/${eventId}`),
+          fetch(`${API_URL}/api/events/${eventId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           }),
-          fetch(`/api/events/${eventId}/mutual-looking`, {
+          fetch(`${API_URL}/api/events/${eventId}/mutual-looking`, {
             headers: { 'Authorization': `Bearer ${token}` }
           })
         ]);
@@ -63,7 +65,7 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
     }
     try {
       if (userLooking) {
-        const res = await fetch(`/api/events/${eventId}/join`, {
+        const res = await fetch(`${API_URL}/api/events/${eventId}/join`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -79,7 +81,7 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
           showNotification(errData.error || 'Ошибка при удалении запроса', 'error');
         }
       } else {
-        const res = await fetch(`/api/events/${eventId}/join`, {
+        const res = await fetch(`${API_URL}/api/events/${eventId}/join`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -89,7 +91,7 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
         });
         if (res.ok) {
           setUserLooking(true);
-          const participantsRes = await fetch(`/api/events/${eventId}/participants`, {
+          const participantsRes = await fetch(`${API_URL}/api/events/${eventId}/participants`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           const participantsData = await participantsRes.json();
@@ -108,7 +110,7 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
 
   const handleArrange = async (otherUserId) => {
     try {
-      const response = await fetch(`/api/events/${eventId}/arrange/${otherUserId}`, {
+      const response = await fetch(`${API_URL}/api/events/${eventId}/arrange/${otherUserId}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -117,7 +119,7 @@ function EventDetails({ eventId, onBack, onViewProfile, onOpenChat }) {
         throw new Error(err.error || 'Ошибка');
       }
       showNotification('Встреча подтверждена! Вы можете обсудить детали в чате.', 'success');
-      const mutualRes = await fetch(`/api/events/${eventId}/mutual-looking`, {
+      const mutualRes = await fetch(`${API_URL}/api/events/${eventId}/mutual-looking`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const mutualData = await mutualRes.json();

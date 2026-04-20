@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useNotification } from '../context/NotificationContext';
 import './Auth.css';
 
+const API_URL = process.env.REACT_APP_API_URL || '';
+
 function Auth({ mode: initialMode = 'login', onSuccess }) {
   const [mode, setMode] = useState(initialMode);
   const [formData, setFormData] = useState({
@@ -56,7 +58,7 @@ function Auth({ mode: initialMode = 'login', onSuccess }) {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          await fetch('/api/user/location', {
+          await fetch(`${API_URL}/api/user/location`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -84,7 +86,7 @@ function Auth({ mode: initialMode = 'login', onSuccess }) {
     setLoading(true);
     setServerError('');
 
-    const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
+    const endpoint = mode === 'login' ? `${API_URL}/api/auth/login` : `${API_URL}/api/auth/register`;
     const payload = mode === 'login'
       ? { email: formData.email, password: formData.password }
       : {
@@ -133,7 +135,6 @@ function Auth({ mode: initialMode = 'login', onSuccess }) {
         <h2 className="auth-title">{mode === 'login' ? 'Вход' : 'Регистрация'}</h2>
         {serverError && <div className="server-error">{serverError}</div>}
         <form onSubmit={handleSubmit}>
-          {/* поля формы – без изменений */}
           <div className="input-group">
             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className={errors.email ? 'error' : ''} />
             {errors.email && <span className="error-text">{errors.email}</span>}
